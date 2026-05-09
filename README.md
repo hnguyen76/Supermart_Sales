@@ -1,4 +1,5 @@
 # Supermart Grocery Sales - Retail Analytics
+https://hnguyen76.github.io/Supermart_Sales/dashboard/index.html
 
 Professional retail analytics project built from the Supermart Grocery Sales dataset. The project validates the raw CSV, creates reusable summary tables, generates executive charts, writes a business-ready Markdown report, and builds a static HTML dashboard.
 
