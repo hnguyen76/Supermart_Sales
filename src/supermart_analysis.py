@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -44,6 +45,34 @@ CHART_COLORS = {
     "purple": "#7C3AED",
     "gray": "#475569",
 }
+
+CHART_FILES = [
+    {
+        "title": "Monthly Sales and Profit Trend",
+        "filename": "monthly_sales_profit_trend.png",
+        "alt": "Monthly sales bars with profit line trend",
+    },
+    {
+        "title": "Category Sales and Margin",
+        "filename": "category_sales_margin.png",
+        "alt": "Category sales bars with profit margin dots",
+    },
+    {
+        "title": "Discount vs Margin",
+        "filename": "discount_vs_profit_margin.png",
+        "alt": "Subcategory discount versus margin bubble chart",
+    },
+    {
+        "title": "Regional Performance",
+        "filename": "region_sales_profit.png",
+        "alt": "Regional sales and profit bar chart",
+    },
+    {
+        "title": "Top Cities",
+        "filename": "top_10_cities_by_sales.png",
+        "alt": "Top ten cities by sales bar chart",
+    },
+]
 
 
 def parse_args() -> argparse.Namespace:
@@ -723,39 +752,35 @@ def build_dashboard_payload(df: pd.DataFrame, summaries: dict[str, pd.DataFrame]
         "segments": segments,
         "charts": [
             {
-                "title": "Monthly Sales and Profit Trend",
-                "src": "../outputs/charts/monthly_sales_profit_trend.png",
-                "alt": "Monthly sales bars with profit line trend",
-            },
-            {
-                "title": "Category Sales and Margin",
-                "src": "../outputs/charts/category_sales_margin.png",
-                "alt": "Category sales bars with profit margin dots",
-            },
-            {
-                "title": "Discount vs Margin",
-                "src": "../outputs/charts/discount_vs_profit_margin.png",
-                "alt": "Subcategory discount versus margin bubble chart",
-            },
-            {
-                "title": "Regional Performance",
-                "src": "../outputs/charts/region_sales_profit.png",
-                "alt": "Regional sales and profit bar chart",
-            },
-            {
-                "title": "Top Cities",
-                "src": "../outputs/charts/top_10_cities_by_sales.png",
-                "alt": "Top ten cities by sales bar chart",
-            },
+                "title": chart["title"],
+                "src": f"assets/charts/{chart['filename']}",
+                "alt": chart["alt"],
+            }
+            for chart in CHART_FILES
         ],
     }
+
+
+def copy_dashboard_chart_assets(output_dir: Path, dashboard_path: Path) -> None:
+    source_dir = output_dir / "charts"
+    asset_dir = dashboard_path.parent / "assets" / "charts"
+    asset_dir.mkdir(parents=True, exist_ok=True)
+
+    for chart in CHART_FILES:
+        source = source_dir / chart["filename"]
+        destination = asset_dir / chart["filename"]
+        if not source.exists():
+            raise FileNotFoundError(f"Dashboard chart asset not found: {source}")
+        shutil.copy2(source, destination)
 
 
 def write_dashboard(
     df: pd.DataFrame,
     summaries: dict[str, pd.DataFrame],
+    output_dir: Path,
     dashboard_path: Path,
 ) -> None:
+    copy_dashboard_chart_assets(output_dir, dashboard_path)
     payload = build_dashboard_payload(df, summaries)
     dashboard_json = json.dumps(payload, ensure_ascii=True)
 
@@ -1390,7 +1415,7 @@ def run_pipeline(
     export_tables(summaries, output_dir)
     export_charts(summaries, output_dir)
     write_report(df, summaries, output_dir, report_path)
-    write_dashboard(df, summaries, dashboard_path)
+    write_dashboard(df, summaries, output_dir, dashboard_path)
 
 
 def main() -> None:

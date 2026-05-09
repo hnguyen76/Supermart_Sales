@@ -39,13 +39,14 @@ python src/supermart_analysis.py
 The pipeline writes:
 
 - Static dashboard to `dashboard/index.html`
+- Dashboard chart assets to `dashboard/assets/charts/`
 - Summary CSV files to `outputs/tables/`
 - Chart PNG files to `outputs/charts/`
 - Business report to `reports/supermart_sales_analysis.md`
 
 ## Dashboard Layer
 
-Open `dashboard/index.html` in a browser after running the pipeline. The dashboard includes KPI cards, a year filter, category and region performance bars, generated chart assets, and ranked city/sub-category tables.
+Open `dashboard/index.html` in a browser after running the pipeline. The dashboard includes KPI cards, a year filter, category and region performance bars, generated chart assets, and ranked city/sub-category tables. The chart images are copied into `dashboard/assets/charts/` so the dashboard works even when a browser preview serves only the `dashboard/` folder.
 
 ## Analysis Scope
 
