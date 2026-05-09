@@ -48,6 +48,20 @@ The pipeline writes:
 
 Open `dashboard/index.html` in a browser after running the pipeline. The dashboard includes KPI cards, a year filter, category and region performance bars, generated chart assets, and ranked city/sub-category tables. The chart images are copied into `dashboard/assets/charts/` so the dashboard works even when a browser preview serves only the `dashboard/` folder.
 
+## Professional Report Layer
+
+The repo also includes a Quarto-ready report source:
+
+- [Quarto report source](reports/supermart_sales_report.qmd)
+
+After installing Quarto CLI, render it with:
+
+```bash
+quarto render reports/supermart_sales_report.qmd
+```
+
+This creates a polished HTML report, and the same source can also be rendered to PDF when a LaTeX engine is available.
+
 ## Analysis Scope
 
 - Data quality checks: required columns, missing values, duplicate rows, numeric conversion, date parsing.
@@ -60,6 +74,7 @@ Open `dashboard/index.html` in a browser after running the pipeline. The dashboa
 - [Dashboard](dashboard/index.html)
 - [Analysis script](src/supermart_analysis.py)
 - [Generated report](reports/supermart_sales_analysis.md)
+- [Quarto report source](reports/supermart_sales_report.qmd)
 - [Data dictionary](docs/data_dictionary.md)
 
 ## Notes

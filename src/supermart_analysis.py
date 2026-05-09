@@ -744,7 +744,7 @@ def build_dashboard_payload(df: pd.DataFrame, summaries: dict[str, pd.DataFrame]
             "title": "Supermart Retail Dashboard",
             "subtitle": "Grocery sales, margin, discount, and regional performance",
             "dateRange": f"{quality['date_min']} to {quality['date_max']}",
-            "state": "Tamil Nadu",
+            "state": "Hieu Nguyen",
             "sourceRows": quality["rows"],
         },
         "filters": [{"key": "all", "label": "All Years"}]
