@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Supermart Retail Dashboard</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-2: #f1f5f9;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: #d9e2ef;
+      --blue: #2563eb;
+      --teal: #0f766e;
+      --orange: #f59e0b;
+      --red: #dc2626;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    .shell {
+      width: min(1440px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      border-bottom: 1px solid var(--line);
+      background: rgba(248, 250, 252, 0.94);
+      backdrop-filter: blur(12px);
+    }
+
+    .topbar-inner {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: center;
+      padding: 18px 0;
+    }
+
+    .eyebrow {
+      margin: 0 0 3px;
+      color: var(--teal);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 4px;
+      font-size: clamp(26px, 4vw, 38px);
+      line-height: 1.08;
+    }
+
+    h2 {
+      margin-bottom: 4px;
+      font-size: 19px;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .filter {
+      display: grid;
+      gap: 6px;
+      min-width: 168px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    select {
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--text);
+      font: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 0 14px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+
+    main {
+      padding: 22px 0 36px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .kpi-card,
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .kpi-card {
+      min-height: 128px;
+      padding: 16px;
+    }
+
+    .kpi-label {
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .kpi-value {
+      margin-bottom: 8px;
+      font-size: clamp(22px, 2.5vw, 31px);
+      font-weight: 800;
+      line-height: 1.05;
+      overflow-wrap: anywhere;
+    }
+
+    .kpi-note {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .panel {
+      overflow: hidden;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+      padding: 18px 18px 10px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-header p {
+      margin-bottom: 0;
+    }
+
+    .bar-list {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: minmax(130px, 190px) 1fr minmax(92px, auto);
+      gap: 12px;
+      align-items: center;
+    }
+
+    .bar-name {
+      min-width: 0;
+      font-weight: 700;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .bar-track {
+      height: 12px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      min-width: 2px;
+      border-radius: inherit;
+      background: var(--blue);
+    }
+
+    .bar-fill.teal {
+      background: var(--teal);
+    }
+
+    .bar-meta {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .chart-panel {
+      min-height: 360px;
+    }
+
+    .chart-panel.large {
+      grid-column: 1 / -1;
+    }
+
+    figure {
+      margin: 0;
+    }
+
+    .chart-panel img {
+      display: block;
+      width: 100%;
+      height: auto;
+      padding: 10px;
+    }
+
+    .table-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 620px;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    td.numeric,
+    th.numeric {
+      text-align: right;
+    }
+
+    tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    .footer {
+      padding: 20px 0 32px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 1120px) {
+      .kpi-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .dashboard-grid,
+      .chart-grid,
+      .table-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .shell {
+        width: min(100% - 20px, 1440px);
+      }
+
+      .topbar-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .bar-row {
+        grid-template-columns: 1fr;
+      }
+
+      .bar-meta {
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 460px) {
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <div>
+        <p class="eyebrow">Retail Analytics</p>
+        <h1 id="dashboardTitle">Supermart Retail Dashboard</h1>
+        <p class="muted" id="dashboardSubtitle"></p>
+      </div>
+      <label class="filter" for="yearFilter">
+        Year
+        <select id="yearFilter"></select>
+      </label>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="kpi-grid" id="kpiGrid" aria-label="KPI summary"></section>
+
+    <section class="dashboard-grid" aria-label="Performance summary">
+      <article class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Category Performance</h2>
+            <p class="muted">Sales contribution with profit margin context.</p>
+          </div>
+        </div>
+        <div class="bar-list" id="categoryBars"></div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Region Mix</h2>
+            <p class="muted">Revenue distribution and margin by region.</p>
+          </div>
+        </div>
+        <div class="bar-list" id="regionBars"></div>
+      </article>
+    </section>
+
+    <section class="chart-grid" id="chartGrid" aria-label="Generated chart assets"></section>
+
+    <section class="table-grid" aria-label="Ranked detail tables">
+      <article class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Top Cities</h2>
+            <p class="muted">Highest sales cities in the selected period.</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table id="cityTable"></table>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Top Sub-Categories</h2>
+            <p class="muted">Product groups ranked by sales.</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table id="subcategoryTable"></table>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="shell footer">
+    Static dashboard generated from the Supermart Grocery Sales analytics pipeline.
+  </footer>
+
+  <script>
+    window.DASHBOARD_DATA = {"meta": {"title": "Supermart Retail Dashboard", "subtitle": "Grocery sales, margin, discount, and regional performance", "dateRange": "2015-01-03 to 2018-12-30", "state": "Tamil Nadu", "sourceRows": 9994}, "filters": [{"key": "all", "label": "All Years"}, {"key": "2015", "label": "2015"}, {"key": "2016", "label": "2016"}, {"key": "2017", "label": "2017"}, {"key": "2018", "label": "2018"}], "segments": {"all": {"period": "2015-01-03 to 2018-12-30", "kpis": [{"label": "Sales", "value": 14956982.0, "format": "currency", "note": "9,994 orders"}, {"label": "Profit", "value": 3747121.1999999997, "format": "currency", "note": "25.1% margin"}, {"label": "Orders", "value": 9994, "format": "number", "note": "50 customers"}, {"label": "Avg Order Value", "value": 1496.5961576946167, "format": "currency", "note": "Sales per order"}, {"label": "Avg Discount", "value": 0.22681709025415253, "format": "percent", "note": "Order-level average"}, {"label": "Best Category", "value": 2267401, "format": "currency", "note": "Eggs, Meat & Fish"}], "categoryRows": [{"Category": "Eggs, Meat & Fish", "orders": 1490, "sales": 2267401, "profit": 567357.22, "profit_margin": 0.25022359079845163, "avg_discount": 0.22779194630872485, "sales_share": 0.15159482039892808}, {"Category": "Snacks", "orders": 1514, "sales": 2237546, "profit": 568178.85, "profit_margin": 0.2539294611149894, "avg_discount": 0.22204755614266844, "sales_share": 0.14959876263807764}, {"Category": "Food Grains", "orders": 1398, "sales": 2115272, "profit": 529162.64, "profit_margin": 0.25016292940104157, "avg_discount": 0.22854792560801143, "sales_share": 0.14142371769919895}, {"Category": "Bakery", "orders": 1413, "sales": 2112281, "profit": 528521.06, "profit_margin": 0.2502134233087359, "avg_discount": 0.22542816702052373, "sales_share": 0.14122374420187175}, {"Category": "Fruits & Veggies", "orders": 1418, "sales": 2100727, "profit": 530400.38, "profit_margin": 0.25248420189772397, "avg_discount": 0.22929478138222847, "sales_share": 0.14045126215970574}, {"Category": "Beverages", "orders": 1400, "sales": 2085313, "profit": 525605.76, "profit_margin": 0.2520512556148645, "avg_discount": 0.2303285714285714, "sales_share": 0.13942070666395132}, {"Category": "Oil & Masala", "orders": 1361, "sales": 2038442, "profit": 497895.29, "profit_margin": 0.2442528607632692, "avg_discount": 0.22452608376193975, "sales_share": 0.13628698623826652}], "regionRows": [{"Region": "West", "orders": 3203, "sales": 4798743, "profit": 1192004.61, "profit_margin": 0.24839934332803404, "avg_discount": 0.2247268186075554, "sales_share": 0.3208363157754686}, {"Region": "East", "orders": 2848, "sales": 4248368, "profit": 1074345.58, "profit_margin": 0.2528843028664184, "avg_discount": 0.22767205056179773, "sales_share": 0.2840391196566259}, {"Region": "Central", "orders": 2323, "sales": 3468156, "profit": 856806.84, "profit_margin": 0.24704968288623694, "avg_discount": 0.2287257856220405, "sales_share": 0.23187538769519145}, {"Region": "South", "orders": 1619, "sales": 2440461, "profit": 623562.89, "profit_margin": 0.2555102867859802, "avg_discount": 0.22677578752316244, "sales_share": 0.16316533642950162}, {"Region": "North", "orders": 1, "sales": 1254, "profit": 401.28, "profit_margin": 0.31999999999999995, "avg_discount": 0.12, "sales_share": 8.384044321240742e-05}], "cityRows": [{"City": "Kanyakumari", "orders": 459, "sales": 706764, "profit": 172217.74, "profit_margin": 0.24367078685388616, "avg_discount": 0.2234640522875817}, {"City": "Vellore", "orders": 435, "sales": 676550, "profit": 174073.01, "profit_margin": 0.25729511492129187, "avg_discount": 0.23020689655172413}, {"City": "Bodi", "orders": 442, "sales": 667177, "profit": 173655.13, "profit_margin": 0.26028344802054026, "avg_discount": 0.22110859728506788}, {"City": "Tirunelveli", "orders": 446, "sales": 659812, "profit": 165169.01, "profit_margin": 0.25032738113280756, "avg_discount": 0.22901345291479822}, {"City": "Perambalur", "orders": 434, "sales": 659738, "profit": 171132.19, "profit_margin": 0.2593941685941995, "avg_discount": 0.23417050691244237}, {"City": "Salem", "orders": 431, "sales": 657093, "profit": 160899.3, "profit_margin": 0.2448653386963489, "avg_discount": 0.22503480278422272}, {"City": "Pudukottai", "orders": 430, "sales": 653179, "profit": 164072.63, "profit_margin": 0.25119091397610765, "avg_discount": 0.22323255813953488}, {"City": "Tenkasi", "orders": 432, "sales": 643652, "profit": 156230.72, "profit_margin": 0.2427254479128473, "avg_discount": 0.23087962962962963}, {"City": "Karur", "orders": 430, "sales": 642273, "profit": 169305.94, "profit_margin": 0.2636043240179799, "avg_discount": 0.2267906976744186}, {"City": "Krishnagiri", "orders": 440, "sales": 637273, "profit": 160477.48, "profit_margin": 0.25181904772366004, "avg_discount": 0.22738636363636364}], "subcategoryRows": [{"Subcategory Label": "Beverages / Health Drinks", "orders": 719, "sales": 1051439, "profit": 267469.79, "profit_margin": 0.25438450542542174, "avg_discount": 0.23155771905424202}, {"Subcategory Label": "Beverages / Soft Drinks", "orders": 681, "sales": 1033874, "profit": 258135.97, "profit_margin": 0.24967836506189342, "avg_discount": 0.2290308370044053}, {"Subcategory Label": "Snacks / Cookies", "orders": 520, "sales": 768213, "profit": 190643.7, "profit_margin": 0.24816515731964964, "avg_discount": 0.21869230769230769}, {"Subcategory Label": "Bakery / Breads & Buns", "orders": 502, "sales": 742586, "profit": 190764.98, "profit_margin": 0.25689277740221333, "avg_discount": 0.22649402390438247}, {"Subcategory Label": "Snacks / Noodles", "orders": 495, "sales": 735435, "profit": 193685.81, "profit_margin": 0.2633622413945488, "avg_discount": 0.22193939393939394}, {"Subcategory Label": "Snacks / Chocolates", "orders": 499, "sales": 733898, "profit": 183849.34, "profit_margin": 0.2505107521753704, "avg_discount": 0.22565130260521044}, {"Subcategory Label": "Oil & Masala / Masalas", "orders": 463, "sales": 697480, "profit": 168999.11, "profit_margin": 0.2422995784825371, "avg_discount": 0.223866090712743}, {"Subcategory Label": "Bakery / Cakes", "orders": 452, "sales": 685612, "profit": 168398.46, "profit_margin": 0.2456177254773837, "avg_discount": 0.22464601769911505}, {"Subcategory Label": "Bakery / Biscuits", "orders": 459, "sales": 684083, "profit": 169357.62, "profit_margin": 0.24756881840361475, "avg_discount": 0.2250326797385621}, {"Subcategory Label": "Oil & Masala / Spices", "orders": 447, "sales": 672876, "profit": 160302.6, "profit_margin": 0.23823497940185118, "avg_discount": 0.22017897091722596}], "yearRows": [{"Year": 2015, "orders": 1993, "sales": 2975599, "profit": 752529.11, "profit_margin": 0.2529000413026083, "avg_discount": 0.2288309081786252}, {"Year": 2016, "orders": 2102, "sales": 3131959, "profit": 797192.99, "profit_margin": 0.25453493803718374, "avg_discount": 0.22735965746907708}, {"Year": 2017, "orders": 2587, "sales": 3871912, "profit": 953216.22, "profit_margin": 0.24618747016977657, "avg_discount": 0.22736374178585236}, {"Year": 2018, "orders": 3312, "sales": 4977512, "profit": 1244182.88, "profit_margin": 0.24996079969269785, "avg_discount": 0.22483393719806763}]}, "2015": {"period": "2015-01-03 to 2015-12-31", "kpis": [{"label": "Sales", "value": 2975599.0, "format": "currency", "note": "1,993 orders"}, {"label": "Profit", "value": 752529.11, "format": "currency", "note": "25.3% margin"}, {"label": "Orders", "value": 1993, "format": "number", "note": "50 customers"}, {"label": "Avg Order Value", "value": 1493.0250878073257, "format": "currency", "note": "Sales per order"}, {"label": "Avg Discount", "value": 0.2288309081786252, "format": "percent", "note": "Order-level average"}, {"label": "Best Category", "value": 482982, "format": "currency", "note": "Eggs, Meat & Fish"}], "categoryRows": [{"Category": "Eggs, Meat & Fish", "orders": 314, "sales": 482982, "profit": 126057.88, "profit_margin": 0.2609991262614342, "avg_discount": 0.23114649681528662, "sales_share": 0.16231420967677432}, {"Category": "Snacks", "orders": 307, "sales": 459713, "profit": 117007.64, "profit_margin": 0.25452323514888636, "avg_discount": 0.21895765472312703, "sales_share": 0.15449427157355544}, {"Category": "Bakery", "orders": 293, "sales": 433979, "profit": 107567.44, "profit_margin": 0.24786323762209692, "avg_discount": 0.22709897610921503, "sales_share": 0.14584592883651326}, {"Category": "Oil & Masala", "orders": 280, "sales": 423918, "profit": 105637.64, "profit_margin": 0.2491935704546634, "avg_discount": 0.227, "sales_share": 0.14246476087671758}, {"Category": "Fruits & Veggies", "orders": 277, "sales": 409212, "profit": 100586.06, "profit_margin": 0.2458042774894187, "avg_discount": 0.23353790613718411, "sales_share": 0.13752256268401758}, {"Category": "Beverages", "orders": 274, "sales": 409091, "profit": 104834.61, "profit_margin": 0.2562623230528171, "avg_discount": 0.22777372262773724, "sales_share": 0.13748189860260068}, {"Category": "Food Grains", "orders": 248, "sales": 356704, "profit": 90837.84, "profit_margin": 0.25465887682784605, "avg_discount": 0.2381451612903226, "sales_share": 0.11987636774982113}], "regionRows": [{"Region": "West", "orders": 661, "sales": 987569, "profit": 242766.78, "profit_margin": 0.2458226007499223, "avg_discount": 0.2242057488653555, "sales_share": 0.33188914232058825}, {"Region": "East", "orders": 517, "sales": 773288, "profit": 196158.27, "profit_margin": 0.25366780552653084, "avg_discount": 0.23179883945841392, "sales_share": 0.2598764147991715}, {"Region": "Central", "orders": 466, "sales": 689710, "profit": 176739.48, "profit_margin": 0.2562518739760189, "avg_discount": 0.2330257510729614, "sales_share": 0.23178862474412715}, {"Region": "South", "orders": 349, "sales": 525032, "profit": 136864.58, "profit_margin": 0.26067854911700616, "avg_discount": 0.22759312320916908, "sales_share": 0.1764458181361131}], "cityRows": [{"City": "Vellore", "orders": 101, "sales": 158778, "profit": 39762.73, "profit_margin": 0.250429719482548, "avg_discount": 0.2325742574257426}, {"City": "Salem", "orders": 97, "sales": 148683, "profit": 36375.91, "profit_margin": 0.24465412992742952, "avg_discount": 0.21958762886597938}, {"City": "Pudukottai", "orders": 93, "sales": 145891, "profit": 36166.55, "profit_margin": 0.24790117279338686, "avg_discount": 0.2213978494623656}, {"City": "Bodi", "orders": 92, "sales": 141653, "profit": 36130.79, "profit_margin": 0.25506547690483083, "avg_discount": 0.22793478260869565}, {"City": "Ooty", "orders": 89, "sales": 141420, "profit": 34193.340000000004, "profit_margin": 0.24178574459058128, "avg_discount": 0.2244943820224719}, {"City": "Perambalur", "orders": 86, "sales": 137279, "profit": 34798.05, "profit_margin": 0.2534841454264673, "avg_discount": 0.23290697674418606}, {"City": "Theni", "orders": 93, "sales": 137015, "profit": 33538.3, "profit_margin": 0.24477830894427619, "avg_discount": 0.23010752688172043}, {"City": "Chennai", "orders": 90, "sales": 136731, "profit": 38087.09, "profit_margin": 0.2785548997666952, "avg_discount": 0.23566666666666666}, {"City": "Tenkasi", "orders": 85, "sales": 133443, "profit": 31624.28, "profit_margin": 0.23698717804605712, "avg_discount": 0.23823529411764705}, {"City": "Tirunelveli", "orders": 90, "sales": 129344, "profit": 34357.58, "profit_margin": 0.26562948416625437, "avg_discount": 0.23233333333333334}], "subcategoryRows": [{"Subcategory Label": "Beverages / Health Drinks", "orders": 150, "sales": 224977, "profit": 59367.89, "profit_margin": 0.2638842637247363, "avg_discount": 0.22373333333333334}, {"Subcategory Label": "Beverages / Soft Drinks", "orders": 124, "sales": 184114, "profit": 45466.72, "profit_margin": 0.24694873828171676, "avg_discount": 0.23266129032258065}, {"Subcategory Label": "Snacks / Cookies", "orders": 104, "sales": 155981, "profit": 38124.27, "profit_margin": 0.24441611478321076, "avg_discount": 0.22211538461538463}, {"Subcategory Label": "Snacks / Chocolates", "orders": 105, "sales": 155870, "profit": 38616.21, "profit_margin": 0.24774626291140053, "avg_discount": 0.22447619047619047}, {"Subcategory Label": "Bakery / Breads & Buns", "orders": 105, "sales": 151383, "profit": 40100.45, "profit_margin": 0.2648940105560069, "avg_discount": 0.22657142857142856}, {"Subcategory Label": "Oil & Masala / Spices", "orders": 98, "sales": 151205, "profit": 35761.07, "profit_margin": 0.2365071922224794, "avg_discount": 0.22163265306122448}, {"Subcategory Label": "Snacks / Noodles", "orders": 98, "sales": 147862, "profit": 40267.159999999996, "profit_margin": 0.2723293341088312, "avg_discount": 0.20969387755102042}, {"Subcategory Label": "Bakery / Cakes", "orders": 95, "sales": 147329, "profit": 32753.82, "profit_margin": 0.22231753422611977, "avg_discount": 0.22831578947368422}, {"Subcategory Label": "Eggs, Meat & Fish / Mutton", "orders": 88, "sales": 139978, "profit": 34613.52, "profit_margin": 0.24727828658789236, "avg_discount": 0.22215909090909092}, {"Subcategory Label": "Oil & Masala / Edible Oil & Ghee", "orders": 92, "sales": 139676, "profit": 34690.2, "profit_margin": 0.2483619233082276, "avg_discount": 0.24108695652173912}], "yearRows": [{"Year": 2015, "orders": 1993, "sales": 2975599, "profit": 752529.11, "profit_margin": 0.2529000413026083, "avg_discount": 0.2288309081786252}]}, "2016": {"period": "2016-01-02 to 2016-12-31", "kpis": [{"label": "Sales", "value": 3131959.0, "format": "currency", "note": "2,102 orders"}, {"label": "Profit", "value": 797192.99, "format": "currency", "note": "25.5% margin"}, {"label": "Orders", "value": 2102, "format": "number", "note": "50 customers"}, {"label": "Avg Order Value", "value": 1489.990009514748, "format": "currency", "note": "Sales per order"}, {"label": "Avg Discount", "value": 0.22735965746907705, "format": "percent", "note": "Order-level average"}, {"label": "Best Category", "value": 487965, "format": "currency", "note": "Bakery"}], "categoryRows": [{"Category": "Bakery", "orders": 316, "sales": 487965, "profit": 124536.04, "profit_margin": 0.25521510764091687, "avg_discount": 0.22829113924050634, "sales_share": 0.1558018479807686}, {"Category": "Fruits & Veggies", "orders": 313, "sales": 468441, "profit": 118900.21, "profit_margin": 0.2538211002025869, "avg_discount": 0.22715654952076675, "sales_share": 0.1495680499010364}, {"Category": "Eggs, Meat & Fish", "orders": 306, "sales": 462055, "profit": 114208.28, "profit_margin": 0.2471746437112465, "avg_discount": 0.2276470588235294, "sales_share": 0.1475290704635661}, {"Category": "Food Grains", "orders": 285, "sales": 438736, "profit": 113643.27, "profit_margin": 0.2590242651617374, "avg_discount": 0.22764912280701752, "sales_share": 0.14008357069808386}, {"Category": "Snacks", "orders": 305, "sales": 436318, "profit": 113047.83, "profit_margin": 0.2590950407730142, "avg_discount": 0.22288524590163936, "sales_share": 0.13931152994020676}, {"Category": "Beverages", "orders": 295, "sales": 425719, "profit": 110201.14, "profit_margin": 0.2588588716970584, "avg_discount": 0.2305084745762712, "sales_share": 0.13592738602261395}, {"Category": "Oil & Masala", "orders": 282, "sales": 412725, "profit": 102656.22, "profit_margin": 0.2487278938760676, "avg_discount": 0.2274822695035461, "sales_share": 0.13177854499372438}], "regionRows": [{"Region": "East", "orders": 644, "sales": 970983, "profit": 249641.74, "profit_margin": 0.257102070788057, "avg_discount": 0.22282608695652173, "sales_share": 0.31002417336880844}, {"Region": "West", "orders": 642, "sales": 950696, "profit": 241265.74, "profit_margin": 0.2537780110571623, "avg_discount": 0.22570093457943927, "sales_share": 0.30354675779599927}, {"Region": "Central", "orders": 476, "sales": 701119, "profit": 172575.47, "profit_margin": 0.24614290869310346, "avg_discount": 0.2334453781512605, "sales_share": 0.22385957159720163}, {"Region": "South", "orders": 340, "sales": 509161, "profit": 133710.04, "profit_margin": 0.26260856585637943, "avg_discount": 0.23055882352941176, "sales_share": 0.16256949723799066}], "cityRows": [{"City": "Bodi", "orders": 102, "sales": 156201, "profit": 39504.36, "profit_margin": 0.2529072157028444, "avg_discount": 0.21568627450980393}, {"City": "Kanyakumari", "orders": 98, "sales": 152495, "profit": 38726.48, "profit_margin": 0.25395245745762157, "avg_discount": 0.23081632653061226}, {"City": "Cumbum", "orders": 101, "sales": 152489, "profit": 37294.51, "profit_margin": 0.24457180517939, "avg_discount": 0.23039603960396038}, {"City": "Perambalur", "orders": 95, "sales": 151093, "profit": 43299.08, "profit_margin": 0.28657237595388274, "avg_discount": 0.22642105263157897}, {"City": "Chennai", "orders": 100, "sales": 145579, "profit": 35792.88, "profit_margin": 0.2458656811765433, "avg_discount": 0.2253}, {"City": "Salem", "orders": 98, "sales": 145302, "profit": 35889.16, "profit_margin": 0.24699701311750702, "avg_discount": 0.22520408163265307}, {"City": "Karur", "orders": 94, "sales": 142995, "profit": 39722.06, "profit_margin": 0.2777863561662995, "avg_discount": 0.22159574468085108}, {"City": "Tirunelveli", "orders": 90, "sales": 139420, "profit": 37075.53, "profit_margin": 0.2659269114904605, "avg_discount": 0.22633333333333333}, {"City": "Ramanadhapuram", "orders": 93, "sales": 138790, "profit": 36522.14, "profit_margin": 0.2631467684991714, "avg_discount": 0.2296774193548387}, {"City": "Vellore", "orders": 92, "sales": 137457, "profit": 36892.5, "profit_margin": 0.268393024727733, "avg_discount": 0.24065217391304347}], "subcategoryRows": [{"Subcategory Label": "Beverages / Soft Drinks", "orders": 152, "sales": 222429, "profit": 57392.26, "profit_margin": 0.2580250776652325, "avg_discount": 0.2282236842105263}, {"Subcategory Label": "Beverages / Health Drinks", "orders": 143, "sales": 203290, "profit": 52808.88, "profit_margin": 0.25977116434650005, "avg_discount": 0.23293706293706296}, {"Subcategory Label": "Bakery / Biscuits", "orders": 114, "sales": 182123, "profit": 44636.73, "profit_margin": 0.24509111973775966, "avg_discount": 0.2317543859649123}, {"Subcategory Label": "Snacks / Cookies", "orders": 115, "sales": 161416, "profit": 39109.15, "profit_margin": 0.24228793923774597, "avg_discount": 0.21582608695652175}, {"Subcategory Label": "Bakery / Cakes", "orders": 102, "sales": 157889, "profit": 40861.87, "profit_margin": 0.2588012464452875, "avg_discount": 0.22441176470588237}, {"Subcategory Label": "Snacks / Chocolates", "orders": 103, "sales": 151243, "profit": 39024.93, "profit_margin": 0.258028007907804, "avg_discount": 0.22203883495145632}, {"Subcategory Label": "Oil & Masala / Masalas", "orders": 101, "sales": 148994, "profit": 36214.0, "profit_margin": 0.24305676738660617, "avg_discount": 0.22534653465346535}, {"Subcategory Label": "Bakery / Breads & Buns", "orders": 100, "sales": 147953, "profit": 39037.44, "profit_margin": 0.2638502767770846, "avg_discount": 0.22830000000000003}, {"Subcategory Label": "Fruits & Veggies / Fresh Fruits", "orders": 88, "sales": 134455, "profit": 30528.56, "profit_margin": 0.2270541073221524, "avg_discount": 0.23954545454545456}, {"Subcategory Label": "Oil & Masala / Edible Oil & Ghee", "orders": 90, "sales": 133407, "profit": 34095.27, "profit_margin": 0.255573320740291, "avg_discount": 0.23399999999999999}], "yearRows": [{"Year": 2016, "orders": 2102, "sales": 3131959, "profit": 797192.99, "profit_margin": 0.25453493803718374, "avg_discount": 0.22735965746907708}]}, "2017": {"period": "2017-01-02 to 2017-12-31", "kpis": [{"label": "Sales", "value": 3871912.0, "format": "currency", "note": "2,587 orders"}, {"label": "Profit", "value": 953216.22, "format": "currency", "note": "24.6% margin"}, {"label": "Orders", "value": 2587, "format": "number", "note": "50 customers"}, {"label": "Avg Order Value", "value": 1496.6803247004252, "format": "currency", "note": "Sales per order"}, {"label": "Avg Discount", "value": 0.22736374178585236, "format": "percent", "note": "Order-level average"}, {"label": "Best Category", "value": 609338, "format": "currency", "note": "Food Grains"}], "categoryRows": [{"Category": "Food Grains", "orders": 395, "sales": 609338, "profit": 149775.58, "profit_margin": 0.2458004916811359, "avg_discount": 0.2268860759493671, "sales_share": 0.15737392791984942}, {"Category": "Snacks", "orders": 393, "sales": 569039, "profit": 142096.88, "profit_margin": 0.24971378060203256, "avg_discount": 0.22297709923664122, "sales_share": 0.1469658917867968}, {"Category": "Eggs, Meat & Fish", "orders": 372, "sales": 565101, "profit": 135896.22, "profit_margin": 0.24048129449425856, "avg_discount": 0.23102150537634408, "sales_share": 0.14594882321705657}, {"Category": "Oil & Masala", "orders": 362, "sales": 564196, "profit": 137558.11, "profit_margin": 0.24381262894455116, "avg_discount": 0.22359116022099446, "sales_share": 0.14571508856606244}, {"Category": "Beverages", "orders": 369, "sales": 543575, "profit": 135179.89, "profit_margin": 0.24868673136181763, "avg_discount": 0.23178861788617885, "sales_share": 0.14038929603771985}, {"Category": "Fruits & Veggies", "orders": 355, "sales": 516400, "profit": 130630.77, "profit_margin": 0.25296431061192876, "avg_discount": 0.23349295774647888, "sales_share": 0.13337079974958108}, {"Category": "Bakery", "orders": 341, "sales": 504263, "profit": 122078.77, "profit_margin": 0.24209345123477233, "avg_discount": 0.22181818181818183, "sales_share": 0.13023617272293378}], "regionRows": [{"Region": "West", "orders": 805, "sales": 1206881, "profit": 294150.34, "profit_margin": 0.2437277080341807, "avg_discount": 0.22690683229813663, "sales_share": 0.3117015572667974}, {"Region": "East", "orders": 766, "sales": 1132477, "profit": 282176.79, "profit_margin": 0.2491677888380956, "avg_discount": 0.23018276762402087, "sales_share": 0.2924852114407559}, {"Region": "Central", "orders": 603, "sales": 904462, "profit": 223122.06, "profit_margin": 0.24669036399539174, "avg_discount": 0.22835820895522385, "sales_share": 0.23359570155520062}, {"Region": "South", "orders": 412, "sales": 626838, "profit": 153365.75, "profit_margin": 0.2446656871472374, "avg_discount": 0.22182038834951456, "sales_share": 0.16189365874017797}, {"Region": "North", "orders": 1, "sales": 1254, "profit": 401.28, "profit_margin": 0.31999999999999995, "avg_discount": 0.12, "sales_share": 0.00032387099706811517}], "cityRows": [{"City": "Krishnagiri", "orders": 120, "sales": 189484, "profit": 46597.91, "profit_margin": 0.24592002490975493, "avg_discount": 0.22066666666666668}, {"City": "Madurai", "orders": 113, "sales": 177695, "profit": 44449.13, "profit_margin": 0.2501428290047553, "avg_discount": 0.23212389380530973}, {"City": "Salem", "orders": 112, "sales": 174806, "profit": 41753.79, "profit_margin": 0.23885787673191997, "avg_discount": 0.22053571428571428}, {"City": "Coimbatore", "orders": 113, "sales": 174805, "profit": 40821.71, "profit_margin": 0.23352713023082863, "avg_discount": 0.2215929203539823}, {"City": "Namakkal", "orders": 115, "sales": 172540, "profit": 39515.43, "profit_margin": 0.22902185000579575, "avg_discount": 0.23286956521739133}, {"City": "Cumbum", "orders": 112, "sales": 170494, "profit": 39915.36, "profit_margin": 0.2341159219679285, "avg_discount": 0.2363392857142857}, {"City": "Kanyakumari", "orders": 110, "sales": 169956, "profit": 42334.61, "profit_margin": 0.24909158841111817, "avg_discount": 0.22163636363636363}, {"City": "Tirunelveli", "orders": 113, "sales": 169397, "profit": 40127.25, "profit_margin": 0.23688288458473292, "avg_discount": 0.22938053097345135}, {"City": "Ramanadhapuram", "orders": 104, "sales": 165385, "profit": 42309.39, "profit_margin": 0.2558236236659915, "avg_discount": 0.21057692307692305}, {"City": "Vellore", "orders": 105, "sales": 164641, "profit": 41906.07, "profit_margin": 0.25452997734464683, "avg_discount": 0.2325714285714286}], "subcategoryRows": [{"Subcategory Label": "Beverages / Soft Drinks", "orders": 180, "sales": 276727, "profit": 70095.71, "profit_margin": 0.2533027496413433, "avg_discount": 0.23199999999999998}, {"Subcategory Label": "Beverages / Health Drinks", "orders": 189, "sales": 266848, "profit": 65084.18, "profit_margin": 0.24389982312027822, "avg_discount": 0.2315873015873016}, {"Subcategory Label": "Snacks / Noodles", "orders": 140, "sales": 206253, "profit": 52956.88, "profit_margin": 0.2567568956572753, "avg_discount": 0.22857142857142856}, {"Subcategory Label": "Snacks / Cookies", "orders": 134, "sales": 195449, "profit": 48454.9, "profit_margin": 0.24791582458851158, "avg_discount": 0.2167910447761194}, {"Subcategory Label": "Oil & Masala / Edible Oil & Ghee", "orders": 125, "sales": 190193, "profit": 47154.33, "profit_margin": 0.24792884070391655, "avg_discount": 0.22888}, {"Subcategory Label": "Oil & Masala / Spices", "orders": 124, "sales": 189423, "profit": 47741.95, "profit_margin": 0.2520388231629739, "avg_discount": 0.22217741935483873}, {"Subcategory Label": "Oil & Masala / Masalas", "orders": 113, "sales": 184580, "profit": 42661.83, "profit_margin": 0.23112921226568425, "avg_discount": 0.2192920353982301}, {"Subcategory Label": "Bakery / Breads & Buns", "orders": 116, "sales": 175000, "profit": 40645.45, "profit_margin": 0.23225971428571426, "avg_discount": 0.22137931034482758}, {"Subcategory Label": "Snacks / Chocolates", "orders": 119, "sales": 167337, "profit": 40685.1, "profit_margin": 0.24313272019935817, "avg_discount": 0.22336134453781514}, {"Subcategory Label": "Bakery / Biscuits", "orders": 113, "sales": 166289, "profit": 40485.25, "profit_margin": 0.24346318758306323, "avg_discount": 0.21752212389380532}], "yearRows": [{"Year": 2017, "orders": 2587, "sales": 3871912, "profit": 953216.22, "profit_margin": 0.24618747016977657, "avg_discount": 0.22736374178585236}]}, "2018": {"period": "2018-01-01 to 2018-12-30", "kpis": [{"label": "Sales", "value": 4977512.0, "format": "currency", "note": "3,312 orders"}, {"label": "Profit", "value": 1244182.8800000001, "format": "currency", "note": "25.0% margin"}, {"label": "Orders", "value": 3312, "format": "number", "note": "50 customers"}, {"label": "Avg Order Value", "value": 1502.8719806763286, "format": "currency", "note": "Sales per order"}, {"label": "Avg Discount", "value": 0.22483393719806766, "format": "percent", "note": "Order-level average"}, {"label": "Best Category", "value": 772476, "format": "currency", "note": "Snacks"}], "categoryRows": [{"Category": "Snacks", "orders": 509, "sales": 772476, "profit": 196026.5, "profit_margin": 0.2537638709811049, "avg_discount": 0.2226915520628684, "sales_share": 0.15519319692247854}, {"Category": "Eggs, Meat & Fish", "orders": 498, "sales": 757263, "profit": 191194.84, "profit_margin": 0.2524814232307666, "avg_discount": 0.22335341365461847, "sales_share": 0.152136850699707}, {"Category": "Food Grains", "orders": 470, "sales": 710494, "profit": 174905.95, "profit_margin": 0.2461751260390658, "avg_discount": 0.22542553191489362, "sales_share": 0.14274079098151848}, {"Category": "Beverages", "orders": 462, "sales": 706928, "profit": 175390.12, "profit_margin": 0.2481018151777833, "avg_discount": 0.23056277056277055, "sales_share": 0.1420243688011199}, {"Category": "Fruits & Veggies", "orders": 473, "sales": 706674, "profit": 180283.34, "profit_margin": 0.2551152865394793, "avg_discount": 0.2250739957716702, "sales_share": 0.14197333929079428}, {"Category": "Bakery", "orders": 463, "sales": 686074, "profit": 174338.81, "profit_margin": 0.2541107956284599, "avg_discount": 0.22507559395248383, "sales_share": 0.13783472546123446}, {"Category": "Oil & Masala", "orders": 437, "sales": 637603, "profit": 152043.32, "profit_margin": 0.2384607977064098, "avg_discount": 0.22180778032036616, "sales_share": 0.12809672784314735}], "regionRows": [{"Region": "West", "orders": 1095, "sales": 1653597, "profit": 413821.75, "profit_margin": 0.25025550360819476, "avg_discount": 0.22286757990867578, "sales_share": 0.33221356372420596}, {"Region": "East", "orders": 921, "sales": 1371620, "profit": 346368.78, "profit_margin": 0.25252532042402415, "avg_discount": 0.2266558089033659, "sales_share": 0.27556337383013846}, {"Region": "Central", "orders": 778, "sales": 1172865, "profit": 284369.83, "profit_margin": 0.242457426899089, "avg_discount": 0.22354755784061695, "sales_share": 0.23563278200032467}, {"Region": "South", "orders": 518, "sales": 779430, "profit": 199622.52, "profit_margin": 0.25611346753396713, "avg_discount": 0.22768339768339768, "sales_share": 0.1565902804453309}], "cityRows": [{"City": "Kanyakumari", "orders": 166, "sales": 263243, "profit": 61504.79, "profit_margin": 0.23364264196958703, "avg_discount": 0.22036144578313252}, {"City": "Coimbatore", "orders": 150, "sales": 232831, "profit": 59836.89, "profit_margin": 0.2569970923115908, "avg_discount": 0.2158}, {"City": "Tenkasi", "orders": 152, "sales": 232412, "profit": 57448.63, "profit_margin": 0.24718443970190868, "avg_discount": 0.2292763157894737}, {"City": "Bodi", "orders": 151, "sales": 230626, "profit": 58880.87, "profit_margin": 0.25530889838960047, "avg_discount": 0.22178807947019868}, {"City": "Ramanadhapuram", "orders": 148, "sales": 227804, "profit": 52641.46, "profit_margin": 0.2310822461414198, "avg_discount": 0.2281756756756757}, {"City": "Tirunelveli", "orders": 153, "sales": 221651, "profit": 53608.65, "profit_margin": 0.24186062774361497, "avg_discount": 0.2283660130718954}, {"City": "Pudukottai", "orders": 146, "sales": 220314, "profit": 57532.09, "profit_margin": 0.26113678658641754, "avg_discount": 0.22726027397260273}, {"City": "Karur", "orders": 141, "sales": 216083, "profit": 57217.38, "profit_margin": 0.26479352841269327, "avg_discount": 0.23340425531914896}, {"City": "Vellore", "orders": 137, "sales": 215674, "profit": 55511.71, "profit_margin": 0.2573871213034487, "avg_discount": 0.21963503649635036}, {"City": "Perambalur", "orders": 140, "sales": 209260, "profit": 50047.7, "profit_margin": 0.23916515339768707, "avg_discount": 0.2355}], "subcategoryRows": [{"Subcategory Label": "Beverages / Health Drinks", "orders": 237, "sales": 356324, "profit": 90208.84, "profit_margin": 0.25316520919163454, "avg_discount": 0.23565400843881856}, {"Subcategory Label": "Beverages / Soft Drinks", "orders": 225, "sales": 350604, "profit": 85181.28, "profit_margin": 0.24295581339631037, "avg_discount": 0.2252}, {"Subcategory Label": "Bakery / Breads & Buns", "orders": 181, "sales": 268250, "profit": 70981.64, "profit_margin": 0.26461002795899347, "avg_discount": 0.2287292817679558}, {"Subcategory Label": "Snacks / Chocolates", "orders": 172, "sales": 259448, "profit": 65523.1, "profit_margin": 0.2525481021245105, "avg_discount": 0.23011627906976742}, {"Subcategory Label": "Snacks / Noodles", "orders": 170, "sales": 257661, "profit": 65548.02, "profit_margin": 0.25439635800528604, "avg_discount": 0.21776470588235297}, {"Subcategory Label": "Snacks / Cookies", "orders": 167, "sales": 255367, "profit": 64955.38, "profit_margin": 0.2543609001946219, "avg_discount": 0.22005988023952097}, {"Subcategory Label": "Oil & Masala / Masalas", "orders": 159, "sales": 230869, "profit": 54936.91, "profit_margin": 0.23795706656155657, "avg_discount": 0.22924528301886793}, {"Subcategory Label": "Bakery / Cakes", "orders": 143, "sales": 217420, "profit": 53834.7, "profit_margin": 0.24760693588446323, "avg_discount": 0.22083916083916086}, {"Subcategory Label": "Eggs, Meat & Fish / Fish", "orders": 132, "sales": 210452, "profit": 60657.19, "profit_margin": 0.28822339535856156, "avg_discount": 0.22893939393939394}, {"Subcategory Label": "Eggs, Meat & Fish / Mutton", "orders": 133, "sales": 205858, "profit": 51972.45, "profit_margin": 0.2524674775816339, "avg_discount": 0.21586466165413534}], "yearRows": [{"Year": 2018, "orders": 3312, "sales": 4977512, "profit": 1244182.88, "profit_margin": 0.24996079969269785, "avg_discount": 0.22483393719806763}]}}, "charts": [{"title": "Monthly Sales and Profit Trend", "src": "../outputs/charts/monthly_sales_profit_trend.png", "alt": "Monthly sales bars with profit line trend"}, {"title": "Category Sales and Margin", "src": "../outputs/charts/category_sales_margin.png", "alt": "Category sales bars with profit margin dots"}, {"title": "Discount vs Margin", "src": "../outputs/charts/discount_vs_profit_margin.png", "alt": "Subcategory discount versus margin bubble chart"}, {"title": "Regional Performance", "src": "../outputs/charts/region_sales_profit.png", "alt": "Regional sales and profit bar chart"}, {"title": "Top Cities", "src": "../outputs/charts/top_10_cities_by_sales.png", "alt": "Top ten cities by sales bar chart"}]};
+  </script>
+  <script>
+    const dashboard = window.DASHBOARD_DATA;
+    const yearFilter = document.querySelector("#yearFilter");
+    const kpiGrid = document.querySelector("#kpiGrid");
+
+    const formatters = {
+      currency: new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0
+      }),
+      number: new Intl.NumberFormat("en-US", {
+        maximumFractionDigits: 0
+      }),
+      percent: new Intl.NumberFormat("en-US", {
+        style: "percent",
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1
+      })
+    };
+
+    function formatValue(value, type) {
+      if (value === null || value === undefined || Number.isNaN(value)) {
+        return "";
+      }
+      if (type === "currency") {
+        return formatters.currency.format(value);
+      }
+      if (type === "number") {
+        return formatters.number.format(value);
+      }
+      if (type === "percent") {
+        return formatters.percent.format(value);
+      }
+      return String(value);
+    }
+
+    function renderKpis(segment) {
+      kpiGrid.replaceChildren();
+      segment.kpis.forEach((kpi) => {
+        const card = document.createElement("article");
+        card.className = "kpi-card";
+
+        const label = document.createElement("div");
+        label.className = "kpi-label";
+        label.textContent = kpi.label;
+
+        const value = document.createElement("div");
+        value.className = "kpi-value";
+        value.textContent = formatValue(kpi.value, kpi.format);
+
+        const note = document.createElement("p");
+        note.className = "kpi-note";
+        note.textContent = kpi.note;
+
+        card.append(label, value, note);
+        kpiGrid.append(card);
+      });
+    }
+
+    function renderBars(targetId, rows, config) {
+      const target = document.querySelector(`#${targetId}`);
+      target.replaceChildren();
+      const maxValue = Math.max(...rows.map((row) => row[config.valueKey]), 1);
+
+      rows.forEach((row) => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "bar-row";
+
+        const name = document.createElement("div");
+        name.className = "bar-name";
+        name.title = row[config.nameKey];
+        name.textContent = row[config.nameKey];
+
+        const track = document.createElement("div");
+        track.className = "bar-track";
+        const fill = document.createElement("div");
+        fill.className = `bar-fill ${config.color || ""}`.trim();
+        fill.style.width = `${Math.max((row[config.valueKey] / maxValue) * 100, 1)}%`;
+        track.append(fill);
+
+        const meta = document.createElement("div");
+        meta.className = "bar-meta";
+        meta.textContent = `${formatValue(row[config.valueKey], "currency")} | ${formatValue(row.profit_margin, "percent")}`;
+
+        wrapper.append(name, track, meta);
+        target.append(wrapper);
+      });
+    }
+
+    function renderTable(targetId, rows, columns) {
+      const table = document.querySelector(`#${targetId}`);
+      table.replaceChildren();
+
+      const thead = document.createElement("thead");
+      const headRow = document.createElement("tr");
+      columns.forEach((column) => {
+        const th = document.createElement("th");
+        th.textContent = column.label;
+        if (column.numeric) {
+          th.className = "numeric";
+        }
+        headRow.append(th);
+      });
+      thead.append(headRow);
+
+      const tbody = document.createElement("tbody");
+      rows.forEach((row) => {
+        const tr = document.createElement("tr");
+        columns.forEach((column) => {
+          const td = document.createElement("td");
+          if (column.numeric) {
+            td.className = "numeric";
+          }
+          td.textContent = formatValue(row[column.key], column.format);
+          tr.append(td);
+        });
+        tbody.append(tr);
+      });
+
+      table.append(thead, tbody);
+    }
+
+    function renderCharts() {
+      const chartGrid = document.querySelector("#chartGrid");
+      chartGrid.replaceChildren();
+      dashboard.charts.forEach((chart, index) => {
+        const panel = document.createElement("figure");
+        panel.className = index === 0 ? "panel chart-panel large" : "panel chart-panel";
+
+        const header = document.createElement("figcaption");
+        header.className = "panel-header";
+        const titleWrap = document.createElement("div");
+        const title = document.createElement("h2");
+        title.textContent = chart.title;
+        titleWrap.append(title);
+        header.append(titleWrap);
+
+        const img = document.createElement("img");
+        img.src = chart.src;
+        img.alt = chart.alt;
+        img.loading = "lazy";
+
+        panel.append(header, img);
+        chartGrid.append(panel);
+      });
+    }
+
+    function renderSegment(key) {
+      const segment = dashboard.segments[key];
+      document.querySelector("#dashboardTitle").textContent = dashboard.meta.title;
+      document.querySelector("#dashboardSubtitle").textContent =
+        `${dashboard.meta.subtitle} | ${segment.period} | ${dashboard.meta.state}`;
+
+      renderKpis(segment);
+      renderBars("categoryBars", segment.categoryRows, {
+        nameKey: "Category",
+        valueKey: "sales",
+        color: "teal"
+      });
+      renderBars("regionBars", segment.regionRows, {
+        nameKey: "Region",
+        valueKey: "sales"
+      });
+      renderTable("cityTable", segment.cityRows, [
+        { key: "City", label: "City" },
+        { key: "orders", label: "Orders", format: "number", numeric: true },
+        { key: "sales", label: "Sales", format: "currency", numeric: true },
+        { key: "profit", label: "Profit", format: "currency", numeric: true },
+        { key: "profit_margin", label: "Margin", format: "percent", numeric: true }
+      ]);
+      renderTable("subcategoryTable", segment.subcategoryRows, [
+        { key: "Subcategory Label", label: "Sub-Category" },
+        { key: "orders", label: "Orders", format: "number", numeric: true },
+        { key: "sales", label: "Sales", format: "currency", numeric: true },
+        { key: "profit_margin", label: "Margin", format: "percent", numeric: true },
+        { key: "avg_discount", label: "Discount", format: "percent", numeric: true }
+      ]);
+    }
+
+    dashboard.filters.forEach((filter) => {
+      const option = document.createElement("option");
+      option.value = filter.key;
+      option.textContent = filter.label;
+      yearFilter.append(option);
+    });
+
+    yearFilter.addEventListener("change", (event) => {
+      renderSegment(event.target.value);
+    });
+
+    renderCharts();
+    renderSegment("all");
+  </script>
+</body>
+</html>

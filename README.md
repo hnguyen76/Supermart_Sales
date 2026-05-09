@@ -1,6 +1,6 @@
 # Supermart Grocery Sales - Retail Analytics
 
-Professional retail analytics project built from the Supermart Grocery Sales dataset. The project validates the raw CSV, creates reusable summary tables, generates executive charts, and writes a business-ready Markdown report.
+Professional retail analytics project built from the Supermart Grocery Sales dataset. The project validates the raw CSV, creates reusable summary tables, generates executive charts, writes a business-ready Markdown report, and builds a static HTML dashboard.
 
 ## Business Objective
 
@@ -10,18 +10,21 @@ Identify sales, profit, discount, category, region, city, and time-based pattern
 
 ```text
 .
-├── Supermart Grocery Sales - Retail Analytics Dataset.csv
-├── src/
-│   └── supermart_analysis.py
-├── docs/
-│   └── data_dictionary.md
-├── reports/
-│   └── supermart_sales_analysis.md
-├── outputs/
-│   ├── charts/
-│   └── tables/
-├── requirements.txt
-└── README.md
+|-- Supermart Grocery Sales - Retail Analytics Dataset.csv
+|-- dashboard/
+|   `-- index.html
+|-- src/
+|   |-- __init__.py
+|   `-- supermart_analysis.py
+|-- docs/
+|   `-- data_dictionary.md
+|-- reports/
+|   `-- supermart_sales_analysis.md
+|-- outputs/
+|   |-- charts/
+|   `-- tables/
+|-- requirements.txt
+`-- README.md
 ```
 
 ## How to Run
@@ -35,9 +38,14 @@ python src/supermart_analysis.py
 
 The pipeline writes:
 
+- Static dashboard to `dashboard/index.html`
 - Summary CSV files to `outputs/tables/`
 - Chart PNG files to `outputs/charts/`
 - Business report to `reports/supermart_sales_analysis.md`
+
+## Dashboard Layer
+
+Open `dashboard/index.html` in a browser after running the pipeline. The dashboard includes KPI cards, a year filter, category and region performance bars, generated chart assets, and ranked city/sub-category tables.
 
 ## Analysis Scope
 
@@ -48,6 +56,7 @@ The pipeline writes:
 
 ## Key Files
 
+- [Dashboard](dashboard/index.html)
 - [Analysis script](src/supermart_analysis.py)
 - [Generated report](reports/supermart_sales_analysis.md)
 - [Data dictionary](docs/data_dictionary.md)
